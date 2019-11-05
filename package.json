@@ -1,0 +1,44 @@
+{
+  "name": "tiny-tree",
+  "version": "0.1.0",
+  "description": "Efficient, no-dependency b-tree and binary search tree for node or the browser",
+  "keywords": [
+    "b-tree",
+    "btree",
+    "binary tree",
+    "binary-tree",
+    "search-tree",
+    "tree",
+    "data-structure",
+    "balanced tree",
+    "index"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "Jes Sherborne",
+    "email": "jes.sherborne@gmail.com"
+  },
+  "main": "index.js",
+  "engines": {
+    "node": ">=8.0"
+  },
+  "files": [
+    "index.js",
+    "src/*",
+    "dist/*"
+  ],
+  "scripts": {
+    "fuzzer": "node test/fuzzer.js",
+    "benchmark-btree": "node benchmark/b-tree-benchmark.js",
+    "benchmark-array-tree": "node benchmark/array-tree-benchmark.js",
+    "benchmark-compare": "node benchmark/tree-compare-benchmark.js",
+    "clean": "rm -r dist && mkdir dist",
+    "build": "npm run clean && browserify index.js > dist/tiny-tree.js && browserify index.js --plugin tinyify > dist/tiny-tree.min.js",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "benchmark": "^2.1.4",
+    "browserify": "^16.5.0",
+    "tinyify": "^2.5.1"
+  }
+}

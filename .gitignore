@@ -1,0 +1,8 @@
+dist
+node_modules
+package-lock.json
+# WebStorm configs file
+.idea
+
+# MacOS metadata file
+.DS_Store
