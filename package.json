@@ -2,6 +2,10 @@
   "name": "tiny-tree",
   "version": "0.1.0",
   "description": "Efficient, no-dependency b-tree and binary search tree for node or the browser",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/jes-sherborne/tiny-tree"
+  },
   "keywords": [
     "b-tree",
     "btree",
