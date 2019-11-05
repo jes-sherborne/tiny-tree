@@ -1,6 +1,6 @@
 # TinyTree
 
-Implements two different search tree data structures. ArrayTree provides extremely fast queries but slow updates. BTree
+Implements two efficient, zero-dependency search tree data structures. ArrayTree provides extremely fast queries but slow updates. BTree
 provides reasonably fast queries along with fast updates.
 
 Both trees expose the same API, so you can use them interchangeably.
@@ -17,7 +17,8 @@ const arrayTree = new tinyTree.ArrayTree();
 ```
 
 ```html
-<script type="text/javascript" src="//your.server.com/tiny-tree.min.js"></script>
+<!--Browser-->
+<script type="text/javascript" src="/tiny-tree.min.js"></script>
 <script type="text/javascript">
   const bTree = new tinyTree.BTree();
   const arrayTree = new tinyTree.ArrayTree();
@@ -26,8 +27,8 @@ const arrayTree = new tinyTree.ArrayTree();
 
 ##### Options
 
-**BTree** can create trees of any degree; by default, it is of degree 15, which usually provides reasonable performance. You 
-can change this by passing _options_ to the constructor. 
+**BTree** can create trees of any degree; by default, trees are of degree 15, which provides reasonable performance most 
+of the time. You can change this by passing _options_ to the constructor. 
 
 ```javascript
 const tree = new BTree({degree: 5});
@@ -62,10 +63,12 @@ let mySortedData = [
 tree.bulkLoad(mySortedData);
 ```
 
-You can get substantially better loading time, query performance, and memory usage by bulk loading a sorted list of entries. Bulk 
+You can get substantially better loading time by bulk loading a sorted list of entries. Bulk 
 loading is only allowed on empty trees.
 
 The data must be a sorted array of key/value arrays as shown in the example.
+
+For BTrees, bulk loading also leads to better query performance (roughly 50%) and memory usage.
 
 ### Removing entries
 
@@ -104,7 +107,10 @@ tree.toArray(null, true);
 // output ["value-a", "value-b", "value-c", ...]
 ```
 
-Note that the first argument to `toArray` is an optional bounds. See below.
+Note that the first argument to `toArray` is an optional bounds (see below). 
+
+Getting values only is substantially faster than getting keys and values together. See the Performance section for
+more information. 
 
 ### Getting a range of entries based on key
 
@@ -182,8 +188,21 @@ For **ArrayTree**, `getStats` is included mostly for compatibility and returns a
 
 ## Performance
 
+Performance is highly dependent on your data and access patterns, but there are some general rules that can help.
+
+* For gets and queries, ArrayTree is _always_ faster than BTree, in some cases by more than 50x. If your data doesn't
+  change much, you should use ArrayTree.
+* If your data changes a lot, you should use BTree. If you have more than 50,000 items or so with lots of adds 
+  and removes, ArrayTree may be unusably slow.
+* For queries, you should use `valuesOnly = true` if possible. For ArrayTree, this provides an enormous performance
+  benefit (often 10x). For BTree, the performance boost is modest (typically around 5%).
+* For both ArrayTree and BTree, bulk loads are _always_ faster and provide equal or better query performance. If you can
+  bulk load your data, you should.
+
+### Benchmarks
+
 For BTrees,  degree affects performance in a complicated way that depends on how you access data (especially the number of items you
-query at a time). In general, higher-degree trees have slower inserts/deletes but faster lookups. The following table 
+query at a time). Up to a point, higher-degree trees have slower inserts/deletes but faster lookups. The following table 
 also illustrates the substantial benefits of bulk loading.
 
 On a 2017 15" MacBook Pro, here are operations per second for typical operations. 
