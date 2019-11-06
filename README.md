@@ -11,7 +11,7 @@ Both trees expose the same API, so you can use them interchangeably.
 
 ```javascript
 // Node.js
-const tinyTree = require("tinyTree");
+const tinyTree = require("tiny-tree");
 const bTree = new tinyTree.BTree();
 const arrayTree = new tinyTree.ArrayTree();
 ```
@@ -27,15 +27,15 @@ const arrayTree = new tinyTree.ArrayTree();
 
 ##### Options
 
-**BTree** can create trees of any degree; by default, trees are of degree 15, which provides reasonable performance most 
-of the time. You can change this by passing _options_ to the constructor. 
-
 ```javascript
-const tree = new BTree({degree: 5});
+const tree = new BTree({degree: 17});
 ```
 
-**degree** (integer; default 15; min 3)—determines how many items are stored at each node. See the performance section 
-below for guidance on setting the degree.
+**BTree** can create trees of any degree; by default, trees are of degree 15, which provides reasonable performance most 
+of the time. You can change this by passing _options_ to the constructor: 
+
+* **degree** (integer; default 15; min 3)—determines how many items are stored at each node. See the performance section 
+  below for guidance on setting the degree.
 
 **ArrayTree** does not take any options.
 
@@ -114,9 +114,21 @@ more information.
 
 ### Getting a range of entries based on key
 
+```javascript
+// get all entries where key >= "key-a" and key < "key-c"
+let bounds = {min: "key-a", max: "key-c"};
+tree.toArray(bounds);
+// output [["key-a", "value-a"], ["key-b", "value-b"]]
+
+// get just values where key >= "key-a" and key < "key-c"
+let bounds = {min: "key-a", max: "key-c"};
+tree.toArray(bounds, true);
+// output ["value-a", "value-b"]
+```
+
 You can limit your results to just the keys in a certain range. BTrees and ArrayTrees are especially well-suited to this kind of query.
 
-**tree.toArray(bounds __optional object__, valuesOnly __optional boolean__)**—get key/value pairs or values based on bounds. 
+**tree.toArray**(bounds _optional object_, valuesOnly _optional boolean_)—get key/value pairs or values based on bounds. 
 
 When setting `bounds`, `min` is inclusive and `max` is exclusive. 
 If you need to change this behavior, set `minExclusive` and/or `maxInclusive` instead. All min/max properties are 
@@ -131,24 +143,7 @@ Examples:
 * `{min: 100}`: 100 ≤ key
 * `{max: 200}`: 200 < key
 
-```javascript
-// get all entries where key >= "key-a" and key < "key-c"
-let bounds = {min: "key-a", max: "key-c"};
-tree.toArray(bounds);
-// output [["key-a", "value-a"], ["key-b", "value-b"]]
-
-// get just values where key >= "key-a" and key < "key-c"
-let bounds = {min: "key-a", max: "key-c"};
-tree.toArray(bounds, true);
-// output ["value-a", "value-b"]
-```
-
 ### Getting a range of entries based on index (sort position)
-
-**tree.toArrayByIndex(start, count, [valuesOnly])**
-
-This works very much like `toArray`, but instead of querying by key, you are querying by sort position. This is useful
-for determining the top N or bottom N entries.
 
 ```javascript
 // get the top two entries
@@ -159,6 +154,11 @@ tree.toArrayByIndex(0, 2, true);
 tree.toArrayByIndex(tree.size - 3, 2, true);
 // output ["value-y", "value-z"]
 ```
+
+**tree.toArrayByIndex**(start _integer_, count _integer_, valuesOnly _optional boolean_)
+
+This works very much like `toArray`, but instead of querying by key, you are querying by sort position. This is useful
+for determining the top N or bottom N entries.
 
 ### Size and other statistics
 
@@ -199,52 +199,54 @@ Performance is highly dependent on your data and access patterns, but there are 
 * For both ArrayTree and BTree, bulk loads are _always_ faster and provide equal or better query performance. If you can
   bulk load your data, you should.
 
-### Benchmarks
+### BTree Benchmarks
 
-For BTrees,  degree affects performance in a complicated way that depends on how you access data (especially the number of items you
+For BTrees, degree affects performance in a complicated way that depends on how you access data (especially the number of items you
 query at a time). Up to a point, higher-degree trees have slower inserts/deletes but faster lookups. The following table 
 also illustrates the substantial benefits of bulk loading.
 
 On a 2017 15" MacBook Pro, here are operations per second for typical operations. 
 
-| Test                                       | Degree 3   | Degree 7   | Degree 15  | Degree 31  | Degree 63  |
-|:-------------------------------------------|:-----------|:-----------|:-----------|:-----------|:-----------|
-| **Bulk load 10,000 items**                 | 142 ops/s  | 232 ops/s  | 216 ops/s  | 159 ops/s  | 91 ops/s   |
-| Fill factor                                | 99.9%      | 99.8%      | 99.7%      | 99.5%      | 99.0%      |
-| Depth                                      | 9          | 5          | 4          | 3          | 3          |
-| Get 1000 items by key                      | 2,329      | 2,855      | 2,469      | 1,887      | 985        |
-| Get 1000 items by index                    | 5,317      | 8,659      | 11,038     | 12,504     | 9,649      |
-| Query 1000 ranges of size 100 by key       | 212        | 336        | 352        | 327        | 237        |
-| Query 1000 ranges of size 100 by index     | 259        | 446        | 521        | 465        | 427        |
-| Query 1000 ranges of size 1000 by key      | 28         | 50         | 61         | 60         | 64         |
-| Query 1000 ranges of size 1000 by index    | 29         | 51         | 64         | 72         | 75         |
-| **Load 10,000 items in random order**      | 82 ops/s   | 150 ops/s  | 162 ops/s  | 133 ops/s  |            |
-| Fill factor                                | 67.0%      | 68.3%      | 69.4%      | 69.2%      | 69.5%      |
-| Depth                                      | 11         | 6          | 4          | 3          | 3          |
-| Get 1000 items by key                      | 2,289      | 2,646      | 2,392      | 1,749      | 1,131      |
-| Get 1000 items by index                    | 3,932      | 7,443      | 9,708      | 10,981     | 8,889      |
-| Query 1000 ranges of size 100 by key       | 132        | 233        | 274        | 273        | 218        |
-| Query 1000 ranges of size 100 by index     | 148        | 284        | 363        | 410        | 357        |
-| Query 1000 ranges of size 1000 by key      | 17         | 33         | 43         | 50         | 51         |
-| Query 1000 ranges of size 1000 by index    | 17         | 34         | 45         | 53         | 58         |
-| **Bulk load 1,000,000 items**              | 0.57 ops/s | 0.74 ops/s | 0.72 ops/s | 0.57 ops/s | 0.42 ops/s |
-| Fill factor                                | 100%       | 100%       | 100%       | 100%       | 100%       |
-| Depth                                      | 13         | 8          | 6          | 5          | 4          |
-| Get 1000 items by key                      | 329        | 420        | 305        | 186        | 114        |
-| Get 1000 items by index                    | 1,694      | 2,518      | 2,875      | 2,620      | 2,092      |
-| Query 1000 ranges of size 100 by key       | 49         | 84         | 86         | 69         | 46         |
-| Query 1000 ranges of size 100 by index     | 61         | 146        | 229        | 342        | 294        |
-| Query 1000 ranges of size 1000 by key      | 7.1        | 16         | 23         | 27         | 22         |
-| Query 1000 ranges of size 1000 by index    | 7.5        | 18         | 29         | 37         | 41         |
-| **Load 1,000,000 items in random order**   | 0.17 ops/s | 0.25 ops/s | 0.25 ops/s | 0.21 ops/s | 0.15 ops/s |
-| Fill factor                                | 67.0%      | 68.1%      | 68.6%      | 69.2%      | 69.4%      |
-| Depth                                      | 16         | 9          | 6          | 5          | 4          |
-| Get 1000 items by key                      | 310        | 386        | 354        | 226        | 147        |
-| Get 1000 items by index                    | 614        | 1,542      | 1,998      | 2,271      | 2,364      |
-| Query 1000 ranges of size 100 by key       | 22         | 48         | 68         | 66         | 51         |
-| Query 1000 ranges of size 100 by index     | 24         | 60         | 116        | 171        | 221        |
-| Query 1000 ranges of size 1000 by key      | 2.7        | 6.7        | 13         | 16         | 20         |
-| Query 1000 ranges of size 1000 by index    | 2.8        | 6.9        | 14         | 22         | 29         |
+| Test                                       | Degree 3    | Degree 7    | Degree 15   | Degree 31   | Degree 63   |
+|:-------------------------------------------|:------------|:------------|:------------|:------------|:------------|
+| **Bulk load 10,000 items**                 | 142 ops/s   | 232 ops/s   | 216 ops/s   | 159 ops/s   | 91 ops/s    |
+| Fill factor                                | 99.9%       | 99.8%       | 99.7%       | 99.5%       | 99.0%       |
+| Depth                                      | 9           | 5           | 4           | 3           | 3           |
+| Get 1000 items by key                      | 2,329 ops/s | 2,855 ops/s | 2,469 ops/s | 1,887 ops/s | 985 ops/s  |
+| Get 1000 items by index                    | 5,317       | 8,659       | 11,038      | 12,504      | 9,649       |
+| Query 1000 ranges of size 100 by key       | 212         | 336         | 352         | 327         | 237         |
+| Query 1000 ranges of size 100 by index     | 259         | 446         | 521         | 465         | 427         |
+| Query 1000 ranges of size 1000 by key      | 28          | 50          | 61          | 60          | 64          |
+| Query 1000 ranges of size 1000 by index    | 29          | 51          | 64          | 72          | 75          |
+| **Load 10,000 items in random order**      | 82 ops/s    | 150 ops/s   | 162 ops/s   | 133 ops/s   |             |
+| Fill factor                                | 67.0%       | 68.3%       | 69.4%       | 69.2%       | 69.5%       |
+| Depth                                      | 11          | 6           | 4           | 3           | 3           |
+| Get 1000 items by key                      | 2,289 ops/s | 2,646 ops/s | 2,392 ops/s | 1,749 ops/s | 1,131 ops/s |
+| Get 1000 items by index                    | 3,932       | 7,443       | 9,708       | 10,981      | 8,889       |
+| Query 1000 ranges of size 100 by key       | 132 ops/s   | 233 ops/s   | 274 ops/s   | 273 ops/s   | 218 ops/s   |
+| Query 1000 ranges of size 100 by index     | 148         | 284         | 363         | 410         | 357         |
+| Query 1000 ranges of size 1000 by key      | 17          | 33          | 43          | 50          | 51          |
+| Query 1000 ranges of size 1000 by index    | 17          | 34          | 45          | 53          | 58          |
+| **Bulk load 1,000,000 items**              | 0.57 ops/s  | 0.74 ops/s  | 0.72 ops/s  | 0.57 ops/s  | 0.42 ops/s  |
+| Fill factor                                | 100%        | 100%        | 100%        | 100%        | 100%        |
+| Depth                                      | 13          | 8           | 6           | 5           | 4           |
+| Get 1000 items by key                      | 329 ops/s   | 420 ops/s   | 305 ops/s   | 186 ops/s   | 114 ops/s   |
+| Get 1000 items by index                    | 1,694       | 2,518       | 2,875       | 2,620       | 2,092       |
+| Query 1000 ranges of size 100 by key       | 49          | 84          | 86          | 69          | 46          |
+| Query 1000 ranges of size 100 by index     | 61          | 146         | 229         | 342         | 294         |
+| Query 1000 ranges of size 1000 by key      | 7.1         | 16          | 23          | 27          | 22          |
+| Query 1000 ranges of size 1000 by index    | 7.5         | 18          | 29          | 37          | 41          |
+| **Load 1,000,000 items in random order**   | 0.17 ops/s  | 0.25 ops/s  | 0.25 ops/s  | 0.21 ops/s  | 0.15 ops/s  |
+| Fill factor                                | 67.0%       | 68.1%       | 68.6%       | 69.2%       | 69.4%       |
+| Depth                                      | 16          | 9           | 6           | 5           | 4           |
+| Get 1000 items by key                      | 310 ops/s   | 386 ops/s   | 354 ops/s   | 226 ops/s   | 147 ops/s   |
+| Get 1000 items by index                    | 614         | 1,542       | 1,998       | 2,271       | 2,364       |
+| Query 1000 ranges of size 100 by key       | 22          | 48          | 68          | 66          | 51          |
+| Query 1000 ranges of size 100 by index     | 24          | 60          | 116         | 171         | 221         |
+| Query 1000 ranges of size 1000 by key      | 2.7         | 6.7         | 13          | 16          | 20          |
+| Query 1000 ranges of size 1000 by index    | 2.8         | 6.9         | 14          | 22          | 29          |
+
+### BTree vs ArrayTree benchmarks
 
 ArrayTree provides very close to the theoretical best-case performance for queries. If your data changes rarely,
 you can get an enormous boost in performance by using it. Also, if your data is fairly small (less than 10,000 
