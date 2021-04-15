@@ -1,6 +1,6 @@
 {
   "name": "tiny-tree",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Efficient, no-dependency b-tree and binary search tree for node or the browser",
   "repository": {
     "type" : "git",
@@ -36,7 +36,7 @@
     "benchmark-btree": "node benchmark/b-tree-benchmark.js",
     "benchmark-array-tree": "node benchmark/array-tree-benchmark.js",
     "benchmark-compare": "node benchmark/tree-compare-benchmark.js",
-    "clean": "rm -r dist && mkdir dist",
+    "clean": "if [ -d dist ]; then rm -Rf dist; fi && mkdir dist",
     "build": "npm run clean && browserify index.js > dist/tiny-tree.js && browserify index.js --plugin tinyify > dist/tiny-tree.min.js",
     "prepublishOnly": "npm run build"
   },

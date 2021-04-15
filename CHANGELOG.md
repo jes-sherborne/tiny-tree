@@ -8,3 +8,7 @@
 
 * Updated documentation
 * Added Changelog (!)
+
+## 0.1.2
+
+* Improved build to avoid potential error on first install
