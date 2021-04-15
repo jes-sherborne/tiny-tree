@@ -1,7 +1,7 @@
-const tinyTree = require("../index");
-const verify = require("./verify-structure").verify;
-const KvTestStore = require("./kv-test-store").KvTestStore;
-const devUtil = require("../dev-util/dev-util");
+import {ArrayTree, BTree} from "../index.js";
+import verify from "./verify-structure.js";
+import KvTestStore from "./kv-test-store.js";
+import * as devUtil from "../dev-util/dev-util.js";
 
 const APPROXIMATE_N = 500;
 const MIN_DEGREE = 3;
@@ -16,11 +16,11 @@ function runFuzzer(n, type, degree, actions) {
   switch (type) {
     case "BTree":
       console.log("BTree n-" + n + " | degree-" + degree);
-      tree = new tinyTree.BTree({degree: degree});
+      tree = new BTree({degree: degree});
       break;
     case "ArrayTree":
       console.log("ArrayTree n-" + n);
-      tree = new tinyTree.ArrayTree();
+      tree = new ArrayTree();
       break;
     default:
       throw new Error("Unexpected type");
@@ -86,7 +86,7 @@ function runFuzzer(n, type, degree, actions) {
       }
     }
     
-    if (tree instanceof tinyTree.BTree) verify(tree);
+    if (tree instanceof BTree) verify(tree);
     
     let reference = kv.toArray();
     resultArraysAreEqual(reference, tree.toArray());
@@ -170,9 +170,9 @@ function replayActions(actions) {
       case "start":
         kv = new KvTestStore();
         if (action.treeType === "BTree") {
-          tree = new tinyTree.BTree({degree: action.degree});
+          tree = new BTree({degree: action.degree});
         } else if (action.treeType === "ArrayTree") {
-          tree = new tinyTree.ArrayTree();
+          tree = new ArrayTree();
         }
         break;
       case "bulkLoad":

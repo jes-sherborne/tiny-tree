@@ -1,5 +1,5 @@
 // Returns the largest `i` from the sorted array `arr` such that `arr[i] <= value`;
-exports.indexAtOrBelow = function(arr, value) {
+export function indexAtOrBelow(arr, value) {
   let i, lo, hi;
   
   if (!arr.length || arr[0] > value) {
@@ -22,10 +22,10 @@ exports.indexAtOrBelow = function(arr, value) {
   }
   
   return lo;
-};
+}
 
 // Returns the smallest `i` from the sorted array `arr` such that `arr[i] >= value`;
-exports.indexAtOrAbove = function(arr, value) {
+export function indexAtOrAbove(arr, value) {
   if (!arr.length) return -1;
   
   if (arr[0] > value) return 0;
@@ -46,10 +46,10 @@ exports.indexAtOrAbove = function(arr, value) {
   
   if (arr[lo] === value) return lo;
   return hi;
-};
+}
 
 // Returns `i` from the sorted array `arr` such that `arr[i] === value`;
-exports.indexOf = function(arr, value) {
+export function indexOf(arr, value) {
   if (!arr.length) return -1;
   
   let lo = 0;
@@ -67,4 +67,4 @@ exports.indexOf = function(arr, value) {
   if (arr[lo] === value) return lo;
   if (arr[hi] === value) return hi;
   return -1;
-};
+}

@@ -1,5 +1,2 @@
-const BTree = require("./src/b-tree").BTree;
-const ArrayTree = require("./src/array-tree").ArrayTree;
-
-exports.BTree = BTree;
-exports.ArrayTree = ArrayTree;
+export {default as BTree} from "./src/b-tree.js";
+export {default as ArrayTree} from "./src/array-tree.js";

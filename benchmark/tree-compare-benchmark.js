@@ -1,6 +1,6 @@
-const benchmark = require('benchmark');
-const devUtil = require("../dev-util/dev-util");
-const tinyTree = require("../index");
+import Benchmark from "benchmark";
+import * as devUtil from "../dev-util/dev-util.js"
+import {ArrayTree, BTree} from "../index.js";
 
 const N_RANGES = 1000;
 
@@ -46,10 +46,10 @@ function runBenchmark(options) {
   const randomIndexes = devUtil.generateIndexRanges(options.nRanges, 1, endKeys.length).map(_ => _[0]);
   
   
-  const btree = new tinyTree.BTree();
-  const arrayTree = new tinyTree.ArrayTree();
+  const btree = new BTree();
+  const arrayTree = new ArrayTree();
   
-  let suite  = new benchmark.Suite();
+  let suite  = new Benchmark.Suite();
   
   suite.add(`Bulk load ${options.nItems} items, add/delete ${deleteKeys.length} items in BTree`, function() {
     testLoad(btree, startData, deleteKeys, addData);

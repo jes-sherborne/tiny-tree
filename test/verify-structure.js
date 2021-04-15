@@ -2,7 +2,7 @@
  * Performs deep inspection on a b-tree and verifies that it is properly formed
  */
 
-function verify(tree) {
+export default function verify(tree) {
   let globalUnique = new Set([tree._root]);
   checkNode(tree._root, tree._degree, true, null, null, globalUnique);
   checkLeafDepth(tree._root, 0, null);
@@ -11,9 +11,10 @@ function verify(tree) {
 function checkLeafDepth(node, currentDepth, checkDepth) {
   currentDepth++;
   
-  if (this.children) {
-    for (let i = 0; i < this.children.length; i++) {
-      let result = checkLeafDepth(this.children[i], currentDepth, checkDepth);
+  if (node.children) {
+    for (let child of node.children) {
+      if (child == null) break;
+      let result = checkLeafDepth(child, currentDepth, checkDepth);
       if (result != null) checkDepth = result;
     }
     return;
@@ -138,5 +139,3 @@ function filledCount(arr) {
   }
   return 0;
 }
-
-exports.verify = verify;

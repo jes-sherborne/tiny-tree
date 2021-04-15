@@ -1,6 +1,6 @@
-const benchmark = require('benchmark');
-const devUtil = require("../dev-util/dev-util");
-const BTree = require("../index").BTree;
+import Benchmark from "benchmark";
+import * as devUtil from "../dev-util/dev-util.js"
+import {BTree} from "../index.js";
 
 const N_RANGES = 1000;
 
@@ -82,7 +82,7 @@ function runBenchmark(options) {
     }
   }
   
-  let suite  = new benchmark.Suite();
+  let suite  = new Benchmark.Suite();
 
   if (options.bulk) {
     

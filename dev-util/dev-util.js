@@ -1,31 +1,30 @@
-
-function simpleSort(a, b) {
+export function simpleSort(a, b) {
   if (a < b) return -1;
   if (a > b) return 1;
   return 0;
 }
 
-function randomString() {
+export function randomString() {
   return Math.random().toString(36).slice(2);
 }
 
-function randomInteger(lb, ub) {
+export function randomInteger(lb, ub) {
   return lb + Math.floor((ub - lb + 1) * Math.random());
 }
 
-function randomBoolean(pTrue) {
+export function randomBoolean(pTrue) {
   return Math.random() < pTrue;
 }
 
-function deleteRandom(arr) {
+export function deleteRandom(arr) {
   return arr.splice(randomInteger(0, arr.length - 1), 1)[0];
 }
 
-function getRandom(arr) {
+export function getRandom(arr) {
   return arr[randomInteger(0, arr.length - 1)];
 }
 
-function uniqueRandomIntegers(start, n) {
+export function uniqueRandomIntegers(start, n) {
   let result = new Array(n);
   for (let i = 0; i < n; i++) {
     result[i] = start + i;
@@ -33,7 +32,7 @@ function uniqueRandomIntegers(start, n) {
   return shuffleArrayInPlace(result);
 }
 
-function shuffleArrayInPlace(arr) {
+export function shuffleArrayInPlace(arr) {
   let n = arr.length;
   for (let i = 0; i < n - 1; i++) {
     let swap = arr[i];
@@ -45,7 +44,7 @@ function shuffleArrayInPlace(arr) {
 }
 
 
-function generateKeyRanges(n, span, size, keys) {
+export function generateKeyRanges(n, span, size, keys) {
   let result = [];
   for (let i = 0; i < n; i++) {
     let start = randomInteger(0, size - span);
@@ -57,7 +56,7 @@ function generateKeyRanges(n, span, size, keys) {
   return result;
 }
 
-function generateIndexRanges(n, span, size) {
+export function generateIndexRanges(n, span, size) {
   let result = [];
   for (let i = 0; i < n; i++) {
     let start = randomInteger(0, size - span);
@@ -65,14 +64,3 @@ function generateIndexRanges(n, span, size) {
   }
   return result;
 }
-
-exports.deleteRandom = deleteRandom;
-exports.generateIndexRanges = generateIndexRanges;
-exports.generateKeyRanges = generateKeyRanges;
-exports.getRandom = getRandom;
-exports.randomBoolean = randomBoolean;
-exports.randomInteger = randomInteger;
-exports.randomString = randomString;
-exports.shuffleArrayInPlace = shuffleArrayInPlace;
-exports.simpleSort = simpleSort;
-exports.uniqueRandomIntegers = uniqueRandomIntegers;
