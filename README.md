@@ -1,9 +1,25 @@
 # TinyTree
 
-Implements two efficient, zero-dependency search tree data structures. ArrayTree provides extremely fast queries but slow updates. BTree
-provides reasonably fast queries along with fast updates.
+TinyTree is a zero-dependency library that efficiently searches for uniquely-identified items in a range. It includes 
+two implementations with different performance characteristics. *ArrayTree* provides extremely fast access for data 
+that rarely changes. *BTree* provides slightly slower access but performs well with highly volatile data.
 
 Both trees expose the same API, so you can use them interchangeably.
+
+## Motivation
+
+Let's say you have a list of customers, and you want to find everyone with id between 320 and 400. If you had your
+customers in a database, you might write a query like `SELECT * from customers where id >=320 and id <= 400;`. If
+you wanted this query to run fast, you'd create an index on the id field.
+
+TinyTree provides this kind of indexed lookup for JavaScript objects.
+
+One way to do this is to create an array that is sorted by id. Then you can use [binary search](https://en.wikipedia.org/wiki/Binary_search_algorithm) to find quickly find
+the items you want. This is roughly what ArrayTree does, but it includes a number of methods to make these queries
+more convenient to write and provides methods for modifying the list.
+
+Sorted arrays perform extremely well for searches, but they are expensive to update, especially if you are inserting
+items in the middle. BTree provides a performant alternative for volatile data based on the [B-Tree data structure](https://en.wikipedia.org/wiki/B-tree).
 
 ## Usage
 
@@ -18,7 +34,7 @@ const arrayTree = new tinyTree.ArrayTree();
 
 ```html
 <!--Browser-->
-<script type="text/javascript" src="/tiny-tree.min.js"></script>
+<script type="text/javascript" src="tiny-tree.min.js"></script>
 <script type="text/javascript">
   const bTree = new tinyTree.BTree();
   const arrayTree = new tinyTree.ArrayTree();

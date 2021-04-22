@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project are documented here.
 
+## [0.2.1] - 4/22/2021
+### Changed
+- Updated documentation. No functional changes.
+
 ## [0.2.0] - 4/15/2021
 ### Added
 - ES6 module format
